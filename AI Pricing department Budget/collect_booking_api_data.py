@@ -53,7 +53,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dropoff-time", default=DEFAULT_DROPOFF_TIME, help="Dropoff time in HH:MM.")
     parser.add_argument("--airport-id", default=os.getenv("BOOKING_AIRPORT_ID", DEFAULT_AIRPORT_ID), help="Encoded Booking.com pickup airport id.")
     parser.add_argument("--api-key", default=os.getenv("RAPIDAPI_KEY", ""), help="RapidAPI key. Defaults to RAPIDAPI_KEY env var.")
-    parser.add_argument("--usd-to-aed", type=float, default=float(os.getenv("USD_TO_AED", DEFAULT_USD_TO_AED)), help="Conversion rate when API returns USD.")
+    parser.add_argument("--usd-to-aed", type=float, default=float(os.getenv("USD_TO_AED") or DEFAULT_USD_TO_AED), help="Conversion rate when API returns USD.")
     parser.add_argument("--date", default="", help="Collection anchor date in YYYY-MM-DD. Defaults to today.")
     return parser.parse_args()
 
