@@ -51,7 +51,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pages", type=int, default=DEFAULT_PAGES, help="How many result pages to fetch per scenario.")
     parser.add_argument("--pickup-time", default=DEFAULT_PICKUP_TIME, help="Pickup time in HH:MM.")
     parser.add_argument("--dropoff-time", default=DEFAULT_DROPOFF_TIME, help="Dropoff time in HH:MM.")
-    parser.add_argument("--airport-id", default=os.getenv("BOOKING_AIRPORT_ID", DEFAULT_AIRPORT_ID), help="Encoded Booking.com pickup airport id.")
+    parser.add_argument("--airport-id", default=os.getenv("BOOKING_AIRPORT_ID") or DEFAULT_AIRPORT_ID, help="Encoded Booking.com pickup airport id.")
     parser.add_argument("--api-key", default=os.getenv("RAPIDAPI_KEY", ""), help="RapidAPI key. Defaults to RAPIDAPI_KEY env var.")
     parser.add_argument("--usd-to-aed", type=float, default=float(os.getenv("USD_TO_AED") or DEFAULT_USD_TO_AED), help="Conversion rate when API returns USD.")
     parser.add_argument("--date", default="", help="Collection anchor date in YYYY-MM-DD. Defaults to today.")
@@ -121,6 +121,8 @@ def extract_rows(
     usd_to_aed: float,
 ) -> list[dict]:
     rows: list[dict] = []
+    if not isinstance(response, dict):
+        return []
     search_results = response.get("data", {}).get("search_results", [])
 
     for car in search_results:
