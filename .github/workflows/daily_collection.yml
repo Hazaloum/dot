@@ -1,0 +1,39 @@
+name: Daily Pricing Collection
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # 8:00 AM Dubai time (UTC+4)
+  workflow_dispatch:       # Allow manual trigger from GitHub UI
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r "AI Pricing department Budget/requirements.txt"
+
+      - name: Run pricing collector
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          BOOKING_AIRPORT_ID: ${{ secrets.BOOKING_AIRPORT_ID }}
+          USD_TO_AED: ${{ secrets.USD_TO_AED }}
+        run: python "AI Pricing department Budget/collect_booking_api_data.py" --skip-xlsx
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "chore: daily pricing collection $(date -u '+%Y-%m-%d')"
+          git push
